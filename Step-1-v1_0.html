@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LV Harmonic Allocation Tool</title>
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+    <h3>Step 1 Harmonic Allocation</h3>
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a data-toggle="tab" href="#LVSP">Single Phase Connection</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#LV3P">Three Phase Connection</a>
+        </li>
+    </ul>
+    <div class="jumbotron"> 
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="LVSP">
+                <h4>Single Phase/SWER Allocation</h4>
+                <div>
+                    <div class="form-group">
+                        <label for="SP_SWERInp">SWER:</label>
+                        <select class="form-control" id="SP_SWERInp" onchange="Step1_main()">
+                            <option value="Select">Please Select..</option>
+                            <option value="No">No</option>
+                            <option value="Yes">Yes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label for="SP_PowerInp"> Aggregated Load (kVA)</label>
+                                <input class="form-control" id="SP_PowerInp" placeholder="Enter Authorised  Demand .." type="number">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="SP_GenInp"> Aggregated Export Generation (kVA) </label>
+                                <input class="form-control" id="SP_GenInp" placeholder="Enter Aggregated    Export  Generation .. ">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="SubmitSPStep1" onclick="Sub_SP_Step1()">Submit</button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="LV3P">
+                <h4>Three Phase Allocation</h4>
+                <div class=form-group>
+                    <label for="3P_AgrLoad">Is the Aggregated Load less than 16A per Phase? (Total Power <11     kVA)</label>
+                    <select class="form-control" id="3P_AgrLoad" onchange="Step1_main()">
+                        <option value="Please Select">Please Select..</option>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class=form-group>
+                    <label for="3P_PowElec">Type of Power Electronics:</label>
+                    <select class="form-control" id="3P_PowElec" onchange="ThreePh_main(false)">
+                        <option value="Please Select">Please Select..</option>
+                        <option value="Not_PowElec">Equipment is not Power Electronics</option>
+                        <option value="6_Pulse">6 Pulse</option>
+                        <option value="12_Pulse">12 Pulse</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                    <label for="3P_PowerInp">Aggregated Load (kVA)</label>
+                        <input class="form-control" id="3P_PowerInp" placeholder="Enter Authorised Demand.."     type="number" onchange="ThreePh_main(true)">
+                    </div>
+                    <div class="col-lg-6">
+                        <label for="3P_GenInp">Aggregated Export Generation (kVA)</label>
+                        <input class="form-control" id="3P_GenInp" placeholder="Enter Aggregated Generation     .."  type="number" onchange="ThreePh_main(true)">
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <label for="3P_SCRatio">Short Circuit Level at POE/POC (MVA)</label>
+                            <input class="form-control" id="3P_SCRatio" placeholder="Enter Short CircuitLevel    .." type="number">
+                    </div>
+                    <div class="col-lg-3">
+                        <label for="3P_PowerFactor">Power Factor:</label>
+                        <input class="form-control" id="3P_PowerFactor" placeholder="Enter Power Factor.."      type="number">
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="PFSCbtn">Get Harmonic Allocation Results</label>
+                        <button type="button" class="btn btn-primary" id="PFSCbtn" onclick="ThreePh_main_2()     ">Results</button>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-sm-3">
+                        <label for="SCRatio">Short Circuit Ratio (I<sub>sc</sub>/I<sub>L</sub>)</label>
+                        <h5 id="SCRatio">Fill out above inputs to calculate Short Circuit Ratio</h5>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="Load_Current">Authorised Prospective Load Current (I<sub>L</sub>)<label>
+                        <h5 id="Load_Current">Fill out above inputs to Calculate Load Current</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron" id="Results">
+        <h2>Results</h2>
+        <div id="resultsAllocateForm">
+            <h3>Allocate as per Harmonic Emission Limits given below:</h3>
+            <div class="container">
+                <p3 id="HarmonicArray"></p3>
+                <button type="button" class="btn btn-primary" id="Download" onclick="export_table_to_csv    ('#HarmonicArray', 'Step1Limits.csv')">Download Tableas.csv file</button>
+                <button type="button" class="btn btn-primary" id="Download1" onclick="export_table_to_excel ('#HarmonicArray', 'Step1Limits')">Download Table as.xls file</button>
+            </div>
+        </div>
+    </div>
+    <div>
+        <form id="resultsSuccessForm">
+            <h3>Automatic Pass - No Further Assessment Required</h3>
+        </form>
+        <form id="resultsFailedForm">
+            <h3>Failed - Step 2 LV Assessment Required</h3>
+        </form>
+        <form id="resultsNAForm">
+            <h3>Step 1 assessment is not applicable, connection requires step 2 assessment.</h3>
+        </form>
+    </div>
+    </div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://chancejs.com/chance.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <script src="jquery.csv.js"></script>
+    <script src="csv.js"></script>
+    <script src="step1allocv2.js"></script>
+    <!--script src="main.js"></script>-->
+</body>
+
+</html>
