@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LV Harmonic Allocation Tool</title>
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Harmonic Allocation Tool</h1>
+
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a data-toggle="tab" class="nav-link active" id="Step1tab" href="#Step1Allocation">Step 1 Allocation </a>
+            </li>
+            <li class="nav-item">
+                <a data-toggle="tab" class="nav-link" href="#Step2Allocation">Step 2 Allocation </a>
+            </li>
+            <li class="nav-item">
+                <a data-toggle="tab" class="nav-link" href="#Step3Allocation">Step 3 Allocation </a>
+            </li>
+            <li class="nav-item">
+                <a data-toggle="tab" class="nav-link" href="#Home">About</a>
+            </li>
+        </ul>
+
+
+    <div class="tab-content">
+        <div id="Step1Allocation" class="tab-pane fade active in">
+            <h3>Step 1 Harmonic Allocation</h3>
+
+        
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" href="#LVSP">Single Phase Connection</a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" href="#LV3P">Three Phase Connection</a>
+                    </li>
+                </ul>
+                <div class="jumbotron"> 
+
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="LVSP">
+                        <h4>Single Phase/SWER Allocation</h4>
+                        <div>
+                            <div class="form-group">
+                                <label for="SP_SWERInp">SWER:</label>
+                                <select class="form-control" id="SP_SWERInp" onchange="Sub_SP_Step1()">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="SWER_Size">
+                                <label for="SWER_Trx_Size">What is the SWER Transformer Size?</label>
+                                <select class="form-control" id="SWER_Trx_Size" onchange="">
+                                    <option value="10">10 kVA</option>
+                                    <option value="20">20 kVA</option>
+                                    <option value="25">25 kVA</option> 
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <label for="SP_PowerInp"> Aggregated Load (kVA)</label>
+                                        <input class="form-control" id="SP_PowerInp" placeholder="Enter Authorised Demand .." type="number">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <label for="SP_GenInp"> Aggregated Export Generation (kVA) </label>
+                                        <input class="form-control" id="SP_GenInp" placeholder="Enter Aggregated Export Generation .. ">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="SubmitSPStep1" onclick="Sub_SP_Step1()">Submit</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="LV3P">
+                        <h4>Three Phase Allocation</h4>
+                        <div class=form-group>
+                            <label for="3P_AgrLoad">Is the Aggregated Load and/or Generation less than 16A per Phase? (Total Power < 11 kVA)</label>
+                            <select class="form-control" id="3P_AgrLoad" onchange="Step1_main()">
+                                <option value="Please Select">Please Select..</option>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class=form-group>
+                            <label for="3P_PowElec">Type of Power Electronics: (If the Pulse number is not known, use 6 pulse)</label>
+                            <select class="form-control" id="3P_PowElec" onchange="ThreePh_main(false)">
+                                <option value="Please Select">Please Select..</option>
+                                <option value="Not_PowElec">Equipment is not Power Electronics</option>
+                                <option value="6_Pulse">6 Pulse</option>
+                                <option value="12_Pulse">12 Pulse</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                            <label for="3P_PowerInp">Aggregated Load (kVA)</label>
+                                <input class="form-control" id="3P_PowerInp" placeholder="Enter Authorised Demand .." type="number" onchange="ThreePh_main(true)">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="3P_GenInp">Aggregated Export Generation (kVA)</label>
+                                <input class="form-control" id="3P_GenInp" placeholder="Enter Aggregated Generation .." type="number" onchange="ThreePh_main(true)">
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label for="3P_SCRatio">Short Circuit Level at POE/POC (MVA)</label>
+                                    <input class="form-control" id="3P_SCRatio" placeholder="Enter Short Circuit Level .." type="number">
+                            </div>
+                            <div class="col-lg-3">
+                                <label for="3P_PowerFactor">Power Factor:</label>
+                                <input class="form-control" id="3P_PowerFactor" placeholder="Enter Power Factor .." type="number">
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="PFSCbtn">Get Harmonic Allocation Results</label>
+                                <button type="button" class="btn btn-primary" id="PFSCbtn" onclick="ThreePh_main_2()">Results</button>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="SCRatio">Short Circuit Ratio (I<sub>sc</sub>/I<sub>L</sub>)</label>
+                                <h5 id="SCRatio">Fill out above inputs to calculate Short Circuit Ratio</h5>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="Load_Current">Authorised Prospective Load Current (I<sub>L</sub>)</label>
+                                <h5 id="Load_Current">Fill out above inputs to Calculate Load Current</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="jumbotron" id="Results">
+                <h2>Results</h2>
+                <div>
+                    <form id="resultsAllocateForm">
+                        <h3>Allocate as per Harmonic Emission Limits given below:</h3>
+                        <div class="container">
+                            <p3 id="HarmonicArray"></p3>
+                            <button type="button" class="btn btn-primary" id="Download"
+                                onclick="export_table_to_csv('#HarmonicArray', 'Step1Limits.csv')">Download Table as
+                                .csv file</button>
+                            <button type="button" class="btn btn-primary" id="Download1"
+                                onclick="export_table_to_excel('#HarmonicArray', 'Step1Limits')">Download Table as .xls
+                                file</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+                <div>
+                    <form id="resultsSuccessForm">
+                        <h3>Automatic Pass - No Further Assessment Required</h3>
+                    </form>
+                    <form id="resultsFailedForm">
+                        <h3>Failed - Step 2 LV Assessment Required</h3>
+                    </form>
+                    <form id="resultsNAForm">
+                        <h3>Step 1 assessment is not applicable, connection requires step 2 assessment.</h3>
+                    </form>
+                </div>
+            </div>
+
+<!-- **** STEP 2 ALLOCATION CONTAINER **** -->
+        <div id="Step2Allocation" class="tab-pane fade">
+            <h3>Step 2 Harmonic Allocation</h3>
+    <!-- Setup for Main Tabs for choice between MV and LV Step 2 Process -->
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#Step2LV">Step 2 LV Allocation</a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#Step2MV">Step 2 MV Allocation</a>
+                </li>
+            </ul>
+
+    <!-- Tab Content for Step 2 Allocation -->
+        <!-- Step 2 LV Allocation Tab Content -->
+            <div class="tab-content"> 
+                <div class="tab-pane fade active in" id="Step2LV">
+                    <div class="jumbotron">
+                        <h4>Calculate Customer Harmonic Emission Limits:</h4>
+                        <form id="Step2AllocForm">
+                            <div class="form-group">
+                                <label for="MV">Upstream MV Bus Voltage:</label>
+                                <Select class="form-control" id="MV">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="11000">11kV</option>
+                                    <option value="22000">22kV</option>
+                                    <option value="33000">33kV</option>
+                                </Select>
+                            </div>
+                            <span title="If the transfer coefficient is unknown, select 'No' to use default value of 1. If the transfer coefficient value is known, select 'yes' and input transfer coefficient value. This value is typically as low as 0.3 for higher harmonic orders and as high as 3 for lower harmonics. This is dependant on a range of factors such as system resonance and impedance, see the Harmonic Assessment Guideline for more information.">
+                            <div class="form-group">
+                                <label for="Set_TransferCo">Set the Transfer Coeffiecient (T<sub>hML</sub>) - Default Value is 1</label>
+                                <Select class="form-control" id="Set_TransferCo" onchange="Show_TransferCo()">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </Select>
+                            </div>
+                            </span>
+                            <span title="Transfer Coefficient value can range from 0.3 to 3 depending on system characteristics and harmonics order. Column 1 of Harmonic Rangeselects the first harmonic in the range of harmonics, column 2 selects theend of the harmonic range for which that transfer coefficient valueapplies. To add additional rows or remove rows, use the 'Add Row' and'Remove Row' buttons.">
+                            <div class="form-group" id="Value_TransferCo_Section">
+                                <label for="Table_TransferCo">Transfer Coefficient Table (T<sub>hML</sub>)</label>
+                                <table id='Table_TransferCo' class='table table-striped'><tr><th>T<sub>hML</sub> Value</th><th colspan="2">Harmonic Range</th></tr></table>
+                                <button type="button" class="btn btn-primary" id="TransferCo_ADD" onclick="TransferCo_Add()">Add Row</button>
+                                <button type="button" class="btn btn-primary" id="TransferCo_REMOVE" onclick="TransferCo_Remove()">Remove Row</button>
+                            </div>
+                            </span>
+                            <div class="row">
+                            <div class="col-lg-6">
+                                <label for="Si">Agreed Apparent Load of Customer Installation i - S<sub>i - Load</sub> (kVA):</label>
+                                <input class="form-control" type="number" id="Si"
+                                    placeholder="Customer Power Requirement..">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="Si_G">Agreed Apparent Generation of Customer Installation i -S<sub>i - Generation</sub> (kVA):</label>
+                                <input class="form-control" type="number" id="Si_G"
+                                    placeholder="Customer Power Requirement..">
+                            </div>
+                            </div>
+                            <br/>
+
+                            <!-- Str Options - Selection of Str Calculation Methodology -->
+                            <span title="Transformer Capacity at Normal Cyclic Rating for System Normal Operating Condition, this is entered in MVA">
+                            <div class="form-group">
+                                <label for="Str_Options"> Substation Configuration </label>
+                                <select id="Str_Options" class="form-control" onchange="Str_Selection()">
+                                    <option value="Select">Please Select .. </option>
+                                    <option value="Normal">N for Single Transformer Substation (Normal Cyclic Rating)</option>
+                                    <option value="Emergency">N-1 for Closed Bus Multiple Transformer Substation </option>
+                                    <option value="Other">N for CBD</option>
+                                </select>
+                            </div>
+                            </span>
+                            <!-- Section for Transformer Capacity (Str) ** -- label Id was Si, St_load for input id, is now Str_Normal for both, has now been changed to Str -->
+                            <div class="form-group" id="Str_Normal_Div">
+                                <label for="Str_Normal">Transformer Capacity at Substation - S<sub>tr</sub> (MVA):</label>
+                                <input class="form-control" type="number" id="Str_Normal"
+                                    placeholder="Transformer Capacity..">
+                            </div>
+                            <!-- Str_Emergency -->
+                            <div class="form-group" id="Str_Emergency_Div">
+                                <div class="row">
+                                    <span title="e.g. Long Time Emergency Cyclic (LTEC) capacity Multiplier">
+                                    <div class="col-lg-6">
+                                    <label for="Str_Emergency"> Transformer Capacity at Substation - S<sub>tr</sub> (MVA):</label>
+                                    <input class="form-control" type="number" id="Str_Emergency"
+                                        placeholder="Transformer Capacity..">
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="Str_Multiplier">Enter the Emergency Cyclic Capacity Multiplier (Use 1 if multiplier not known)</label>
+                                        <input class="form-control" type="number" id="Str_Emergency_Multiplier"
+                                        placeholder="Capacity Multiplier .. "> 
+                                    </div>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Str_Other -->
+                            <div class="form-group" id="Str_Other_Div">
+                                <label for="Str_Other">Transformer Capacity at Substation - S<sub>tr</sub> (MVA):</label>
+                                <input class="form-control" type="number" id="Str_Other"
+                                    placeholder="Transformer Capacity..">
+                            </div>
+
+                            <div class="form-group" onhover="box()">
+                                <label for="Gen">Is there any generation connected to the upstream bus, excluding the connecting customer?</label>
+                                <Select class="form-control" id="Gen" onchange="st_visibility()">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </Select>
+                            </div>
+                            <div class="form-group" id="DATA_TABLE">
+                                <h3>S<sub>Gi</sub> Data Table</h3>
+                                <h5>K<sub>om</sub> = Total Generator Operating Hours / 24hrs * Total Operating Days in a Year / 365 days</h5>
+                                <h5> S<sub>t</sub> = S<sub>tr</sub> + Σ K<sub>om</sub> * S<sub>Gi</sub></h5>
+                                <table id='ST_Table' class='table table-striped'><tr><th>Generator Name</th><th>Days of Generation per Year</th><th>Hours of Generation per Day</th><th>Maximum Generation Capacity of installation i - S<sub>Gi</sub> (MW)</th></tr></table>
+                                <button type="button" class="btn btn-primary" id="STDATATABLEADD" onclick="calc_ST_ADD()">Add Generator</button>
+                                <button type="button" class="btn btn-primary" id="STDATATABLERemove" onclick="calc_ST_Remove()">Remove Generator</button>
+                            </div>
+
+                            <button type="button" class="btn btn-primary" id="Step2Sub" onclick="store_Vars()">Submit</button>
+                        </form>
+                    </div>
+                    <div class="jumbotron" id="Step2Results">
+                        <h3>Harmonic Allocation Results</h3>
+
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a data-toggle="tab" href="#Harmonic_Results">Harmonic Voltage Limits</a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#Step_Two_Data">Calculation Data</a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="Harmonic_Results">
+                                <h4>Harmonic Voltage Emission Limits</h4>
+                                <p3 id="EUhiTableData"></p3>
+                                <button type="button" class="btn btn-primary" id="Download"
+                                    onclick="export_table_to_csv('#EuhiTable','Step2VoltageLimits.csv')">Download Table as .csv file</button>
+                                <button type="button" class="btn btn-primary" id="Download1"
+                                    onclick="export_table_to_excel('#EuhiTable', 'Step2VoltageLimits')">Download Table as .xls file</button>
+                            </div>
+
+                        <div class="tab-pane fade" id="Step_Two_Data">
+                            <h4>Data</h4>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <h5><strong>S<sub>t</sub> Value - Supply</strong></h5>
+                                    <h5 id="Data_S2_1"></h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h5><strong>S<sub>i</sub> Value</strong></h5>
+                                    <h5 id="Data_S2_2"></h5>
+                                </div>
+                                <div class="col-sm-3">
+                                    <h5><strong>Additional Data</strong></h5>
+                                    <h5 id="Data_S2_3"></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+
+            <!-- Step 2 MV Allocation Tab Content -->
+                <div class="tab-pane fade" id="Step2MV">
+                    <div class="jumbotron">
+                        <h4>Calculate Customer Harmonic Emission Limits: </h4>
+                        <form id="Step2AllocFormMV">
+                            <div class="form-group">
+                                <label for="MV1">MV Voltage Level @ PCC</label>
+                                <Select class="form-control" id="MV1">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="11000">11kV</option>
+                                    <option value="22000">22kV</option>
+                                    <option value="33000">33kV</option>
+                                    <option value="66000">66kV</option>
+                                </Select>
+                            </div>
+                            <div class="form-group">
+                                <label for="HV1">Upstream HV Bus Voltage</label>
+                                <select id="HV1" class="form-control">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="22000">22kV</option>
+                                    <option value="33000">33kV</option>
+                                    <option value="66000">66kV</option>
+                                    <option value="132000">132kV</option>
+                                </select>
+                            </div>
+                            <span title="If the transfer coefficient is unknown, select 'No' to use default value of 1. If the transfer coefficient value is known, select 'yes' and input transfer coefficient value. This value is typically as low as 0.3 for higher harmonic orders and as high as 3 for lower harmonics. This is dependant on a range of factors such as system resonance and impedance, see the Harmonic Assessment Guideline for more information.">
+                                <div class="form-group">
+                                    <label for="MV_Set_TransferCo">Set the Transfer Coeffiecient (T<sub>hML</sub>) - Default Value is 1</label>
+                                    <Select class="form-control" id="MV_Set_TransferCo" onchange="MV_Show_TransferCo()">
+                                        <option value="Select">Please Select..</option>
+                                        <option value="No">No</option>
+                                        <option value="Yes">Yes</option>
+                                    </Select>
+                                </div>
+                                </span>
+                            <span title="Transfer Coefficient value can range from 0.3 to 3 depending on system characteristics and harmonics order. Column 1 of Harmonic Range selects the first harmonic in the range of harmonics, column 2 selects the end of the harmonic range for which that transfer coefficient value applies. To add additional rows or remove rows, use the 'Add Row' and 'Remove Row' buttons.">
+                                <div class="form-group" id="MV_Value_TransferCo_Section">
+                                    <label for="MV_Table_TransferCo">Transfer Coefficient Table (T<sub>hML</sub>)</label>
+                                    <table id='MV_Table_TransferCo' class='table table-striped'><tr><th>T<sub>hML</sub> Value</th><th colspan="2">Harmonic Range</th></tr></table>
+                                    <button type="button" class="btn btn-primary" id="MV_TransferCo_ADD" onclick="MV_TransferCo_Add()">Add Row</button>
+                                    <button type="button" class="btn btn-primary" id="MV_TransferCo_REMOVE" onclick="MV_TransferCo_Remove()">Remove Row</button>
+                                </div>
+                                </span>
+                            <div class="row" id="Si_MV">
+                                <div class="col-lg-6">
+                                    <label for="Si_MVs">Agreed Apparent Power of Customer Installation i - S<sub>i</sub> (MVA) </label>
+                                    <input class="form-control" type="number" id="Si_MVs"
+                                        placeholder="Maximum Generation Capacity ..">
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="MV_Si_G">Agreed Apparent Generation of Customer Installationi -S<sub>i - Generation</sub> (MVA):</label>
+                                    <input class="form-control" type="number" id="MV_Si_G"
+                                        placeholder="Customer Power Requirement..">
+                                </div>
+                            </div>
+                            <br/>
+
+                            
+                            <!-- Str Options - Selection of Str Calculation Methodology -->
+                            <span title="*****Need suitable span caption for this section********">
+                                <div class="form-group">
+                                    <label for="MV_Str_Options"> Substation Configuration </label>
+                                    <select id="MV_Str_Options" class="form-control" onchange="MV_Str_Selection()">
+                                        <option value="Select">Please Select .. </option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="Emergency">N-1 Scenario</option>
+                                        <option value="Other">N for CBD</option>
+                                    </select>
+                                </div>
+                                </span>
+                                <!-- Section for Transformer Capacity (Str) ** -- label Id was Si, St_load for input id, is now Str_Normal for both, has now been changed to Str -->
+                                <div class="form-group" id="MV_Str_Normal_Div">
+                                    <label for="Str_Normal">Transformer Capacity at Normal Cyclic Rating for System Normal Operating Condition - S<sub>tr</sub> (MVA):</label>
+                                    <input class="form-control" type="number" id="MV_Str_Normal"
+                                        placeholder="Transformer Capacity..">
+                                </div>
+                                <!-- Str_Emergency -->
+                                <div class="form-group" id="MV_Str_Emergency_Div">
+                                    <div class="row">
+                                        <span title="e.g. Long Time Emergency Cyclic (LTEC) capacity Multiplier">
+                                        <div class="col-lg-6">
+                                        <label for="MV_Str_Emergency">N-1 for a closed bus multiple transformer substation which could be escalated by a multiplier - S<sub>tr</sub> (MVA):</label>
+                                        <input class="form-control" type="number" id="MV_Str_Emergency"
+                                            placeholder="Transformer Capacity..">
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label for="MV_Str_Multiplier">Enter the Emergency Cyclic Capacity Multiplier</label>
+                                            <input class="form-control" type="number" id="MV_Str_Emergency_Multiplier"
+                                            placeholder="Capacity Multiplier .. "> 
+                                        </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Str_Other -->
+                                <div class="form-group" id="MV_Str_Other_Div">
+                                    <label for="Str_Other">N for CBD - S<sub>tr</sub> (MVA):</label>
+                                    <input class="form-control" type="number" id="MV_Str_Other"
+                                        placeholder="Transformer Capacity..">
+                                </div>
+                            
+                            <div class="form-group" onhover="box()">
+                                <label for="Gen_MV">Is there any generation connected to the upstream bus, excluding the connecting customer?</label>
+                                <Select class="form-control" id="Gen_MV" onchange="st_visibility_MV()">
+                                    <option value="Select">Please Select..</option>
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </Select>
+                            </div>
+                            <div class="form-group" id="DATA_TABLE_MV">
+                                <h3>S<sub>Gi</sub> Data Table</h3>
+                                <table id='MVST_Table' class='table table-striped'><tr><th>Generator Name</th><th>Days of Generation per Year</th><th>Hours of Generation per Day</th><th>Total Generation Capacity (MW)</th></tr></table>
+                                <button type="button" class="btn btn-primary" id="MVSTDATATABLEADD" onclick="calc_MVST_ADD()">Add Generator</button>
+                                <button type="button" class="btn btn-primary" id="MVSTDATATABLERemove" onclick="calc_MVST_Remove()">Remove Generator</button>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="Step2MVSub" onclick="store_Vars_MV()">Submit</button>
+                            </div>
+                                
+                        </form>
+                    </div>
+                    <div class="jumbotron" id="Step2MVResults">
+                        <h3>Harmonic Allocation Results</h3>
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a data-toggle="tab" href="#MVEmissionVoltage">Voltage Harmonic Limits</a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#Data">Calculation Data</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="MVEmissionVoltage">
+                                <h4>Harmonic Voltage Emission Limits</h4>
+                                <p3 id="EUhiMVTableData"></p3>
+                                <button type="button" class="btn btn-primary"
+                                    onclick="export_table_to_csv('#EuhiMVTable','Step2VoltageLimits.csv')">Download Table as .csv file</button>
+                                <button type="button" class="btn btn-primary"
+                                    onclick="export_table_to_excel('#EuhiMVTable', 'Step2VoltageLimits')">Download Table as .xls file</button>
+                            </div>
+                            <div class="tab-pane fade" id="Data">
+                                <h4>Data</h4>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h5><strong>S<sub>t</sub> Value - Supply</strong></h5>
+                                        <h5 id="Data_S3_1"></h5>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <h5><strong>S<sub>i</sub> Value</strong></h5>
+                                        <h5 id="Data_S3_2"></h5>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <h5><strong>Additional Data</strong></h5>
+                                        <h5 id="Data_S3_3"></h5>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3>Planning Levels Used</h3>
+                                    <table id="MV_Results_Table"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--**** STEP 3 ALLOCATION CONTAINER **** -->
+        <div id="Step3Allocation" class="tab-pane fade">
+            <h3>Step 3 Harmonic Allocation</h3>
+            <div class="jumbotron">
+                <h4>Calculate Customer Harmonic Emission Limits for Single Bus System Only</h4>
+                <form id="Step3Allocation">
+                    <div class="form-group">
+                        <label for="HVVoltageSelect">Please Select the Voltage at the POE</label>
+                        <select class="form-control" id=HVVoltageSelect>
+                            <option value="Select">Please Select..</option>
+                            <option value="33000">33kV</option>
+                            <option value="66000">66kV</option>
+                            <option value="132000">132kV</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="SIHV">Please Input the Maximum Customer Load</label>
+                        <input class="form-control" type="number" id="SIHV" placeholder="Please Input Power (MVA) ..">
+                    </div>
+                    <div class="form-group">
+                        <label for="STHV">Please Input the Total Load at the Upstream Busbar</label>
+                        <input class="form-control" type="number" id="STHV" placeholder="Please Input Power (MVA) ..">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="Store_vars()">Submit</button>
+                </form>
+            </div>
+            <div class="jumbotron" id="Step3_Results">
+                <h4>Step 3 Results</h4>
+                <p3 id="Step3Results"></p3>
+                <button type="button" class="btn btn-primary" onclick="export_table_to_csv('#EuhiHVTable','Step3HVVoltageLimits.csv')">Download Table as .csv file</button>
+                <button type="button" class="btn btn-primary" onclick="export_table_to_excel('#EuhiHVTable', 'Step3HVVoltageLimits')">Download Table as .xls file</button>
+            </div>
+        </div>
+
+    <!-- *** Post any updates to the script in this container *** -->
+        <div id="Home" class="tab-pane fade">
+            <div class="container">
+                <h3>Insert ReadMe Information HERE for Reference</h4>
+                <h5>Will also include JSDoc documentation here for assistance with scripting maintenance</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://chancejs.com/chance.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <script src="jquery.csv.js"></script>
+    <script src="csv.js"></script>
+    <script src="step1alloc.js"></script>
+    <script src="step1allocv2.js"></script>
+    <script src="step2allocv1-1.js"></script>
+    <script src="step3alloc.js"></script>
+    <!--script src="main.js"></script>-->
+</body>
+
+</html>
